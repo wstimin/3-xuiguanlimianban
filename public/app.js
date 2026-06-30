@@ -321,8 +321,8 @@ function renderDrawer() {
     renew: '用户续费',
     security: '账号安全'
   }[type];
-  return `<div class="drawer-backdrop" data-action="close-drawer">
-    <form class="drawer" id="drawerForm" data-drawer-type="${type}" data-id="${currentItem.id || ''}" onclick="event.stopPropagation()">
+  return `<div class="drawer-backdrop" data-drawer-backdrop>
+    <form class="drawer" id="drawerForm" data-drawer-type="${type}" data-id="${currentItem.id || ''}">
       <header><h2>${title}</h2><button class="btn icon" type="button" data-action="close-drawer">×</button></header>
       <div class="drawer-body">${drawerFields(type, currentItem)}</div>
       <footer><button class="btn" type="button" data-action="close-drawer">取消</button><button class="btn primary" type="submit">保存</button></footer>
@@ -413,7 +413,15 @@ function bindEvents() {
     render();
   });
   document.querySelectorAll('[data-action]').forEach((el) => el.addEventListener('click', handleAction));
-  document.querySelector('#drawerForm')?.addEventListener('submit', handleDrawerSubmit);
+  document.querySelector('[data-drawer-backdrop]')?.addEventListener('click', (event) => {
+    if (event.target === event.currentTarget) {
+      state.drawer = null;
+      render();
+    }
+  });
+  const drawerForm = document.querySelector('#drawerForm');
+  drawerForm?.addEventListener('click', (event) => event.stopPropagation());
+  drawerForm?.addEventListener('submit', handleDrawerSubmit);
 }
 
 async function handleAction(event) {
